@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from utils import BASE_TEMPLATE_MAP, PARAM_TEMPLATE_MAP
+from templates import BASE_TEMPLATE_MAP, PARAM_TEMPLATE_MAP
 from pydantic import BaseModel
 from typing import Dict, Any
 
