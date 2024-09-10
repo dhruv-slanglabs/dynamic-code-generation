@@ -2,15 +2,17 @@ PYTHON_BASE_TEMPLATE='''
 client = AsyncConvaAI(
     assistant_id="{assistant_id}", 
     assistant_version="LATEST", # this is a special tag to indicate 
-                            # the latest version of the Assistant
+                                # the latest version of the Assistant
     api_key="{api_key}"
         
 )
-response = await client.invoke_capability("<user_input>")
+query = {chosen_query}
+response = asyncio.run(client.invoke_capability(query, stream = False))
 message = response.message
+parameters = response.parameters
 '''
 
-PYTHON_PARAM_TEMPLATE = "{param_name} = response.parameters['{param_name}']\n"
+
 
 ANDROID_BASE_TEMPLATE='''
 ConvaAI.init(
@@ -20,10 +22,11 @@ ConvaAI.init(
                         // the latest version of the Assistant
     application = applicationContext
 );
-val response = ConvaAI.invokeCapability(input = "<user_input>")
-val message = response.message
+val response = ConvaAI.invokeCapability(input = "<user_input>");
+val message = response.message;
+val params = response.params;
 '''
-ANDROID_PARAM_TEMPLATE='val {param_name} = response.params["{param_name}"]\n'
+
 
 FLUTTER_BASE_TEMPLATE='''
 ConvaAI.init(
@@ -34,10 +37,8 @@ ConvaAI.init(
 );
 Response response = await ConvaAI.invokeCapability(input: "<user_input>");
 String message = response.message;
-
-
+var params = response.params;
 '''
-FLUTTER_PARAM_TEMPLATE="var {param_name} = response.params['{param_name}'];\n"
 
 
 IOS_BASE_TEMPLATE='''
@@ -51,10 +52,18 @@ let response: ConvaAICapability? = try await ConvaAI.invokeCapability(
     with: "<user_input>"
 )
 let message = response.message
+let params = response.params
 '''
-IOS_PARAM_TEMPLATE='let {param_name} = response.params["{param_name}"]\n'
 
+PYTHON_IF_SYNTAX= "if response.capability == '{capability_name}':\n"
+PYTHON_ELIF_SYNTAX = "elif response.capability == '{capability_name}':\n"
+PYTHON_COMMENT_SYNTAX = '\t# Use the parameters and handle the "{capability_name}" action\n'
+PYTHON_END_SYNTAX = ''
 
+BLOCK_IF_SYNTAX='if (response.capability == "{capability_name}") {{\n'
+BLOCK_ELIF_SYNTAX='}} else if (response.capability == "{capability_name}") {{\n'
+BLOCK_COMMENT_SYNTAX = '\t// Use the parameters and handle the "{capability_name}" action\n'
+BLOCK_END_SYNTAX = '}'
 
 
 BASE_TEMPLATE_MAP = {
@@ -64,9 +73,30 @@ BASE_TEMPLATE_MAP = {
     'ios': IOS_BASE_TEMPLATE
 }
 
-PARAM_TEMPLATE_MAP = {
-    'python': PYTHON_PARAM_TEMPLATE,
-    'android': ANDROID_PARAM_TEMPLATE,
-    'flutter': FLUTTER_PARAM_TEMPLATE,
-    'ios': IOS_PARAM_TEMPLATE
+IF_SYNTAX_MAP = {
+    'python': PYTHON_IF_SYNTAX,
+    'android': BLOCK_IF_SYNTAX,
+    'flutter': BLOCK_IF_SYNTAX,
+    'ios': BLOCK_IF_SYNTAX
+}
+ELIF_SYNTAX_MAP = {
+    'python': PYTHON_ELIF_SYNTAX,
+    'android': BLOCK_ELIF_SYNTAX,
+    'flutter': BLOCK_ELIF_SYNTAX,
+    'ios': BLOCK_ELIF_SYNTAX
+}
+
+COMMENT_SYNTAX_MAP = {
+    'python': PYTHON_COMMENT_SYNTAX,
+    'android': BLOCK_COMMENT_SYNTAX,
+    'flutter': BLOCK_COMMENT_SYNTAX,
+    'ios': BLOCK_COMMENT_SYNTAX
+}
+
+
+END_SYNTAX_MAP = {
+    'python': PYTHON_END_SYNTAX,
+    'android': BLOCK_END_SYNTAX,
+    'flutter': BLOCK_END_SYNTAX,
+    'ios': BLOCK_END_SYNTAX
 }
