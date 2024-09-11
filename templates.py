@@ -6,7 +6,7 @@ client = AsyncConvaAI(
     api_key="{api_key}"
         
 )
-query = {chosen_query}
+query = "{chosen_query}"
 response = asyncio.run(client.invoke_capability(query, stream = False))
 message = response.message
 parameters = response.parameters
@@ -22,7 +22,8 @@ ConvaAI.init(
                         // the latest version of the Assistant
     application = applicationContext
 );
-val response = ConvaAI.invokeCapability(input = "<user_input>");
+val query = "{chosen_query}"
+val response = ConvaAI.invokeCapability(input = query);
 val message = response.message;
 val params = response.params;
 '''
@@ -35,7 +36,8 @@ ConvaAI.init(
     version = "LATEST", // this is a special tag to indicate 
                         // the latest version of the Assistant
 );
-Response response = await ConvaAI.invokeCapability(input: "<user_input>");
+var query = "{chosen_query}"
+Response response = await ConvaAI.invokeCapability(input: query);
 String message = response.message;
 var params = response.params;
 '''
@@ -48,8 +50,9 @@ ConvaAI.initialize(
     version: "LATEST" // this is a special tag to indicate 
                       // the latest version of the Assistant
 )
+let query = "{chosen_query}"
 let response: ConvaAICapability? = try await ConvaAI.invokeCapability(
-    with: "<user_input>"
+    with: query
 )
 let message = response.message
 let params = response.params
